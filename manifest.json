@@ -1,0 +1,22 @@
+{
+  "name": "HypeXray",
+  "short_name": "HypeXray",
+  "description": "See what’s actually being sold. A calm breakdown of any offer.",
+  "start_url": "/hypexray/",
+  "display": "standalone",
+  "background_color": "#0b0c10",
+  "theme_color": "#0b0c10",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
