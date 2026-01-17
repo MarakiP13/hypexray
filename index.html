@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HypeXray</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- PWA / install -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0c10">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <!-- OPTIONAL: Plausible analytics (replace domain or remove entirely) -->
+  <!--
+  <script defer data-domain="YOUR-USERNAME.github.io" src="https://plausible.io/js/script.js"></script>
+  -->
+
+  <style>
+    :root{
+      --bg:#0b0c10;
+      --panel:#12141b;
+      --panel-soft:#0f1117;
+      --text:#e8e8ee;
+      --muted:#a7a9b5;
+      --line:#262a36;
+      --accent:#7aa7ff;
+      --risk:#ff6b6b;
+      --ok:#2ecc71;
+      --warn:#f1c40f;
+      --radius:16px;
+      --shadow:0 10px 28px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      line-height:1.35;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:18px 14px 60px;
+    }
+    header{
+      margin-bottom:14px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      font-size:20px;
+    }
+    .logo{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      background:linear-gradient(135deg,#7aa7ff,#2ecc71);
+      display:grid;
+      place-items:center;
+      color:#0b0c10;
+      font-weight:900;
+    }
+    .tagline{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:14px;
+      max-width:720px;
+    }
+    .privacy{
+      margin-top:6px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:12px;
+    }
+
+    textarea{
+      width:100%;
+      min-height:180px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      padding:12px;
+      background:var(--panel-soft);
+      color:var(--text);
+      font-size:14px;
+    }
+
+    .buttons{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    button{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#10131b;
+      color:var(--text);
+      font-weight:600;
+      cursor:pointer;
+    }
+    button.primary{
+      background:linear-gradient(135deg,#7aa7ff,#5c88ff);
+      color:#0b0c10;
+      border-color:#7aa7ff;
+    }
+
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+
+    .results-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      margin-top:18px;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .results-header h2{
+      margin:0;
+      font-size:18px;
+    }
+
+    .grid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:var(--panel-soft);
+    }
+    .card h3{
+      margin:0 0 6px 0;
+      font-size:14px;
+    }
+    .card ul{
+      margin:0;
+      padding-left:16px;
+      font-size:13px;
+    }
+    .empty{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .confidence{
+      font-size:11px;
+      margin-bottom:4px;
+      color:var(--muted);
+    }
+
+    .footer-note{
+      margin-top:18px;
+      padding-top:12px;
+      border-top:1px solid var(--line);
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    @media print{
+      body{background:#fff;color:#111}
+      header,.buttons,.hint{display:none}
+      .panel{border:none;box-shadow:none}
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">XR</div>
+      HypeXray
+    </div>
+    <div class="tagline">
+      Paste any marketing text. Get a calm breakdown of what’s actually being offered.
+    </div>
+    <div class="privacy">
+      Runs locally in your browser. No uploads. No accounts.
+    </div>
+  </header>
+
+  <div class="panel">
+    <textarea id="input" placeholder="Paste a sales page, pitch, or listing here."></textarea>
+
+    <div class="buttons">
+      <button class="primary" id="analyzeBtn">X-ray this offer</button>
+      <button id="exampleBtn">Load example</button>
+      <button id="travelExampleBtn">Use this on a travel offer</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+
+    <div class="hint" id="installHint" style="display:none">
+      Tip: You can add HypeXray to your home screen and use it like an app.
+    </div>
+
+    <div class="results-header">
+      <h2>Offer Snapshot</h2>
+      <div class="buttons">
+        <button id="copyBtn">Copy summary</button>
+        <button onclick="window.print()">Print snapshot</button>
+      </div>
+    </div>
+
+    <div class="grid" id="results"></div>
+
+    <div class="footer-note">
+      <strong>Need a second set of eyes?</strong><br>
+      If you’re evaluating something important and want a calm, human read, I also do this as a one-off review.
+      You send the offer. I return a short written snapshot.
+      No calls. No pressure. Just clarity.<br><br>
+      Reach me here: <a href="mailto:YOUR@email.com" style="color:#7aa7ff">YOUR@email.com</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Install hint logic */
+(function(){
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+  if (isMobile && !isStandalone) {
+    document.getElementById('installHint').style.display = 'block';
+  }
+})();
+
+/* Example texts */
+const genericExample = `
+ONLINE BUSINESS ACCELERATOR
+
+You’ll get weekly group calls, templates, and private community access.
+Price: €999 or 3 payments.
+Limited spots. No refunds.
+`;
+
+const travelExample = `
+SUNSET & HIGHLIGHTS SANTORINI TOUR
+
+Includes hotel pickup, guided village walk, winery stop.
+Duration: approx. 5 hours.
+Price: €145 per person.
+Refunds up to 24 hours before departure.
+Limited availability.
+`;
+
+/* Core logic */
+const input = document.getElementById('input');
+const results = document.getElementById('results');
+
+function analyze(text){
+  if(window.plausible){ plausible('Analyze Offer'); }
+
+  const cards = [
+    {title:'What’s being offered', test:/get|includes|you’ll|includes/i},
+    {title:'Price signals', test:/€|\$|price|payment/i},
+    {title:'Timeline & access', test:/hours|days|weeks|duration|starts/i},
+    {title:'Claims & promises', test:/guarantee|results|works|transform/i},
+    {title:'Risks or pressure', test:/limited|spots|ends|no refund/i},
+    {title:'Missing info', test:null}
+  ];
+
+  results.innerHTML = '';
+
+  cards.forEach(c=>{
+    const el = document.createElement('div');
+    el.className='card';
+    el.innerHTML = `<h3>${c.title}</h3>`;
+
+    if(c.test){
+      const lines = text.split('\n').filter(l=>c.test.test(l));
+      if(lines.length){
+        el.innerHTML += '<ul>'+lines.map(l=>`<li>${l}</li>`).join('')+'</ul>';
+      } else {
+        el.innerHTML += '<div class="empty">Not clearly stated.</div>';
+      }
+    } else {
+      el.innerHTML += '<div class="empty">Ask for clarification before deciding.</div>';
+    }
+    results.appendChild(el);
+  });
+}
+
+document.getElementById('analyzeBtn').onclick=()=>analyze(input.value);
+document.getElementById('exampleBtn').onclick=()=>{input.value=genericExample;analyze(input.value)};
+document.getElementById('travelExampleBtn').onclick=()=>{input.value=travelExample;analyze(input.value)};
+document.getElementById('clearBtn').onclick=()=>{input.value='';results.innerHTML=''};
+document.getElementById('copyBtn').onclick=()=>{
+  navigator.clipboard.writeText(results.innerText);
+};
+</script>
+</body>
+</html>
