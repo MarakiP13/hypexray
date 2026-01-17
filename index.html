@@ -269,7 +269,9 @@ const input = document.getElementById('input');
 const results = document.getElementById('results');
 
 function analyze(text){
-  if(window.plausible){ plausible('Analyze Offer'); }
+  if (window.umami) {
+    umami.track('Analyze Offer');
+  }
 
   const cards = [
     {title:'What’s being offered', test:/get|includes|you’ll|includes/i},
@@ -280,6 +282,22 @@ function analyze(text){
     {title:'Missing info', test:null}
   ];
 
+  document.getElementById('travelExampleBtn').onclick = () => {
+  input.value = travelExample;
+  analyze(input.value);
+
+  if (window.umami) {
+    umami.track('Load Travel Example');
+  }
+};
+document.getElementById('exampleBtn').onclick = () => {
+  input.value = genericExample;
+  analyze(input.value);
+
+  if (window.umami) {
+    umami.track('Load Generic Example');
+  }
+};
   results.innerHTML = '';
 
   cards.forEach(c=>{
